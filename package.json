@@ -1,0 +1,47 @@
+{
+  "name": "omont-imagepatheditor",
+  "displayName": "ImagePathEditor",
+  "description": "The Image Path Editor extension streamlines the process of editing image paths within your HTML files.",
+  "version": "0.0.1",
+  "publisher": "omontcreus",
+  "icon": "/ImagePathEditor_lcon_128x128.png",
+  "engines": {
+    "vscode": "^1.83.0"
+  },
+  "categories": ["Other"],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onCommand:extension.editImagePath"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.editImagePath",
+        "title": "Edit Image Path"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "extension.editImagePath",
+          "when": "editorFocus && editorHasSelection && !editorReadonly && resourceLangId == html"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.83.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "eslint": "^8.50.0",
+    "typescript": "^5.2.2",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
+  }
+}
