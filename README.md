@@ -46,4 +46,4 @@ Initial release of Image Path Editor.
 
 ---
 
-**Enjoy!** If you encounter any issues or have suggestions, feel free to [report them](https://github.com/oriolmontcreus/imagepatheditor/issues)
+**Enjoy!** If you encounter any issues or have suggestions, feel free to [report them](https://github.com/oriolmontcreus/imagepatheditor-vsce/issues)
