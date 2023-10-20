@@ -46,9 +46,8 @@ At this moment, there are no identified issues affecting the extension.
 
 Celebrating the initial release of Image Path Editor!
 
-### 🔢 Version 0.0.2 & 0.0.3
+### 🔢 Version 0.0.2 & 0.0.3 ###
 
-Minor changes to extension overview, description and Github Repository.
----
+Minor changes to extension overview, description, and GitHub Repository.
 
 **Enjoy coding!** Encountered a glitch or have ideas to enhance the extension? We encourage you to [report them](https://github.com/oriolmontcreus/imagepatheditor-vsce/issues) on our issues page.
