@@ -6,8 +6,8 @@ Elevate your coding efficiency in Visual Studio Code with **Image Path Editor**!
 
 - **Streamlined Editing:** Instantly adjust image paths in your HTML files without breaking your coding flow.
 - **Smart Renaming:** Rename image assets effortlessly—the extension updates the paths automatically.
-- **Undo Path Changes:** Undo path changes with the shortcut `Ctrl+Shift+Z` 🆕
-- **Directory Path Support:**  Want to save an image in a non-existent directory? No problem. Enter any path, and if the directory is missing, we'll prompt you with the option to create it on the fly.
+- 🆕 **Undo Path Changes:** Undo path changes with the shortcut `Ctrl+Shift+Z` 
+- 🆕 **Directory Path Support:**  Want to save an image in a non-existent directory? No problem. Enter any path, and if the directory is missing, we'll prompt you with the option to create it on the fly.
 
 ## 🚀 Usage
 
