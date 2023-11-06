@@ -2,68 +2,159 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 
+interface ImageEdit {
+    oldPath: string;
+    newPath: string;
+}
+
+let undoStack: ImageEdit[] = [];
+
+function isImagePath(text: string): boolean {
+    return /<img src=/.test(text);
+}
+
+function extractImagePath(text: string): string | null {
+    const matches = /src="([^"]+)"/.exec(text);
+    return matches ? matches[1] : null;
+}
+
+function ensureFileExtension(originalPath: string, newPath: string): string {
+    const originalExtension = path.extname(originalPath);
+    if (originalExtension && !path.extname(newPath)) {
+        return `${newPath}${originalExtension}`;
+    }
+    return newPath;
+}
+
+function getRelativePathForEditor(document: vscode.TextDocument, newPath: string): string {
+    return vscode.workspace.asRelativePath(newPath, false);
+}
+
+function copyFileAsync(src: string, dest: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        fs.copyFile(src, dest, (err) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+
+function deleteFileAsync(filePath: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+
 export function activate(context: vscode.ExtensionContext) {
-    let disposable = vscode.commands.registerCommand('extension.editImagePath', async () => {
-        let editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return; // No open text editor
+    let editImageDisposable = vscode.commands.registerCommand('extension.editImagePath', async () => {
+        const activeEditor = vscode.window.activeTextEditor;
+        if (!activeEditor) {
+            vscode.window.showErrorMessage('No active text editor detected.');
+            return;
         }
 
-        let selection = editor.selection;
-        let selectedText = editor.document.getText(selection);
+        let selection = activeEditor.selection;
+        let selectedText = activeEditor.document.getText(selection);
 
-        // Check if selected text contains an image tag
-        if (selectedText.includes('<img src=')) {
-            const newFileName = await vscode.window.showInputBox({ prompt: "Enter the new image name" });
+        if (isImagePath(selectedText)) {
+            const imagePath = extractImagePath(selectedText);
+            const defaultValue = imagePath ? imagePath : '';
+            const newFileName = await vscode.window.showInputBox({
+                prompt: "Enter the new image name",
+                value: defaultValue
+            });
+
             if (!newFileName) {
-                return; // User cancelled
-            }
-
-            const matches = /src="([^"]+)"/.exec(selectedText);
-
-            if (!matches) {
-                return; // Could not extract src attribute
-            }
-
-            const imagePath = matches[1];
-
-            const currentDir = path.dirname(editor.document.fileName);
-            const currentFilePath = path.join(currentDir, imagePath);
-            const newFilePath = path.join(currentDir, newFileName);
-
-            if (!fs.existsSync(currentFilePath)) {
-                vscode.window.showErrorMessage(`The image file ${currentFilePath} does not exist.`);
+                vscode.window.showWarningMessage('Image rename cancelled.');
                 return;
             }
 
-            fs.copyFile(currentFilePath, newFilePath, async (err) => {
-                if (err) {
-                    vscode.window.showErrorMessage(`Error copying file: ${err.message}`);
-                    return;
+            if (!imagePath) {
+                vscode.window.showErrorMessage('Could not extract image path from the selected text.');
+                return;
+            }
+
+            const currentDir = path.dirname(activeEditor.document.fileName);
+            const currentFilePath = path.join(currentDir, imagePath);
+            let newFilePath = path.join(currentDir, newFileName);
+            newFilePath = ensureFileExtension(currentFilePath, newFilePath);
+
+            try {
+                if (!fs.existsSync(currentFilePath)) {
+                    throw new Error(`The image file ${currentFilePath} does not exist.`);
                 }
 
-                fs.unlink(currentFilePath, (err) => {
-                    if (err) {
-                        vscode.window.showErrorMessage(`Error deleting old file: ${err.message}`);
-                        return;
-                    }
+                const newFileDir = path.dirname(newFilePath);
+                if (!fs.existsSync(newFileDir)) {
+                    fs.mkdirSync(newFileDir, { recursive: true });
+                }
 
-                    editor?.edit(editBuilder => {
-                        // Replace the src attribute with the new file name
-                        let newText = selectedText.replace(imagePath, newFileName);
-                        editBuilder.replace(selection, newText);
-                    });
+                undoStack.push({ oldPath: imagePath, newPath: getRelativePathForEditor(activeEditor.document, newFilePath) });
 
-                    vscode.window.showInformationMessage(`Image path changed to: ${newFileName}`);
+                await copyFileAsync(currentFilePath, newFilePath);
+                await deleteFileAsync(currentFilePath);
+
+                activeEditor.edit(editBuilder => {
+                    const relativeNewFilePath = getRelativePathForEditor(activeEditor.document, newFilePath);
+                    let newText = selectedText.replace(imagePath, relativeNewFilePath);
+                    editBuilder.replace(selection, newText);
+                }).then(() => {
+                    vscode.window.showInformationMessage(`Image path changed to: ${getRelativePathForEditor(activeEditor.document, newFilePath)}`);
                 });
-            });
+
+            } catch (error: unknown) {
+                vscode.window.showErrorMessage(`Error editing image path: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            }
+        } else {
+            vscode.window.showErrorMessage('No image path detected in the selected text.');
         }
     });
 
-    context.subscriptions.push(disposable);
+    let undoDisposable = vscode.commands.registerCommand('extension.undoImagePath', async () => {
+        if (undoStack.length === 0) {
+            vscode.window.showWarningMessage('No image path edits to undo.');
+            return;
+        }
+
+        const { oldPath, newPath } = undoStack.pop()!;
+        const activeEditor = vscode.window.activeTextEditor;
+        if (activeEditor && oldPath && newPath) {
+
+            const currentDir = path.dirname(activeEditor.document.fileName);
+            const oldFilePath = path.join(currentDir, oldPath);
+            const newFilePath = path.join(currentDir, newPath);
+
+            try {
+                await copyFileAsync(newFilePath, oldFilePath);
+                await deleteFileAsync(newFilePath);
+
+                activeEditor.edit(editBuilder => {
+                    let text = activeEditor.document.getText();
+                    let newText = text.replace(newPath, oldPath);
+                    const fullRange = new vscode.Range(
+                        activeEditor.document.positionAt(0),
+                        activeEditor.document.positionAt(text.length)
+                    );
+                    editBuilder.replace(fullRange, newText);
+                }).then(() => {
+                    vscode.window.showInformationMessage(`Undid image path change: ${oldPath}`);
+                });
+            } catch (error) {
+                vscode.window.showErrorMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            }
+        }
+    });
+
+    context.subscriptions.push(editImageDisposable, undoDisposable);
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {
-    // Clean up resources on deactivation
-}
+export function deactivate() {}

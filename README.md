@@ -50,4 +50,25 @@ Celebrating the initial release of Image Path Editor!
 
 Minor changes to extension overview, description, and GitHub Repository.
 
+### 4️⃣ Version 0.0.4 (MAJOR UPDATE) ###
+
+[+] **Smart Format Completion**
+ If you forget to specify a file extension (e.g., .png), don't worry! Our extension now cleverly adopts the format of the last used image.
+
+[+] **Enhanced Context Menu**
+Pre-filled 'default/before' option for the image src attribute right in the context menu, so you can say goodbye to staring at a blank input box.
+
+[+] **Robust Error Handling**
+Optimized code and more error handling.
+
+[+] **Directory Path Support** 
+ Want to save an image in a non-existent directory? No problem. Enter any path, and if the directory is missing, we'll prompt you with the option to create it on the fly.
+
+[+] **Quick Access Shortcut**
+Now you can use the shortcut `Shift + F2` to activate the extension's main functionality "Edit Image Path"
+
+[+] **Undo Functionality**
+Made a mistake? Take a step back with our new undo feature, giving you the safety net you need to edit paths confidently. Also you can use the shortcut `Ctrl+Shift+Z`
+
+
 **Enjoy coding!** Encountered a glitch or have ideas to enhance the extension? We encourage you to [report them](https://github.com/oriolmontcreus/imagepatheditor-vsce/issues) on our issues page.
