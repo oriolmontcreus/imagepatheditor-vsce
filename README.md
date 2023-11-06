@@ -28,19 +28,8 @@ Follow these steps to integrate **Image Path Editor** into your VS Code:
 
 ## ⌨️ Commands
 
-- `Edit Image Path`: Initiates the path editing process.
-
-## 🔒 Requirements
-
-- Ensure you're running Visual Studio Code version 1.83.0 or later.
-
-## ⚙️ Extension Settings
-
-Currently, this extension operates without any need for additional configuration settings.
-
-## 🐞 Known Issues
-
-At this moment, there are no identified issues affecting the extension.
+- `Edit Image Path`: Initiates the path editing process. You can use the shortcut `Shift + F2`
+- `Undo Path Changes`: Undoes the path changes. You can use the shortcut `Ctrl+Shift+Z`
 
 ## 📣 Release Notes
 
