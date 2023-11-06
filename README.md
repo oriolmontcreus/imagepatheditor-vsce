@@ -67,5 +67,6 @@ Now you can use the shortcut `Shift + F2` to activate the extension's main funct
 
 Made a mistake? Take a step back with our new undo feature, giving you the safety net you need to edit paths confidently. Also you can use the shortcut `Ctrl+Shift+Z`
 
+---
 
 **Enjoy coding!** Encountered a glitch or have ideas to enhance the extension? We encourage you to [report them](https://github.com/oriolmontcreus/imagepatheditor-vsce/issues) on our issues page.
