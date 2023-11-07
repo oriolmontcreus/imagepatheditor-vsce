@@ -33,13 +33,11 @@ Follow these steps to integrate **Image Path Editor** into your VS Code:
 
 ## 📣 Release Notes
 
-### 1️⃣ Version 0.0.1
+### 5️⃣ Version 0.0.5 ###
 
-Celebrating the initial release of Image Path Editor!
+**Automatic Path Adjustment**
 
-### 🔢 Version 0.0.2 & 0.0.3 ###
-
-Minor changes to extension overview, description, and GitHub Repository.
+ Convert all absolute paths (`/images/photo.png`) and all root-relative paths (`images/photo.png`) of the document to paths that are relative to the current document. This means paths that work locally will work just as well when deployed.
 
 ### 4️⃣ Version 0.0.4 (MAJOR UPDATE) ###
 
@@ -66,6 +64,14 @@ Now you can use the shortcut `Shift + F2` to activate the extension's main funct
 [+] **Undo Functionality**
 
 Made a mistake? Take a step back with our new undo feature, giving you the safety net you need to edit paths confidently. Also you can use the shortcut `Ctrl+Shift+Z`
+
+### 🔢 Version 0.0.2 & 0.0.3 ###
+
+Minor changes to extension overview, description, and GitHub Repository.
+
+### 1️⃣ Version 0.0.1
+
+Celebrating the initial release of Image Path Editor!
 
 ---
 

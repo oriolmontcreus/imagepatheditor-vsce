@@ -4,6 +4,12 @@ All notable changes to the "omont-imagepatheditor" extension will be documented 
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+### 5️⃣ Version 0.0.5 ###
+
+**Automatic Path Adjustment**
+
+ Convert all absolute paths (`/images/photo.png`) and all root-relative paths (`images/photo.png`) of the document to paths that are relative to the current document. This means paths that work locally will work just as well when deployed.
+
 ### 4️⃣ Version 0.0.4 (MAJOR UPDATE) ###
 
 [+] **Smart Format Completion**

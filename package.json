@@ -2,7 +2,7 @@
   "name": "omont-imagepatheditor",
   "displayName": "ImagePathEditor",
   "description": "The Image Path Editor extension streamlines the process of editing image paths within your HTML files.",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "publisher": "omontcreus",
   "icon": "ImagePathEditor_lcon_128x128.png",
   "engines": {
@@ -39,6 +39,10 @@
     {
       "command": "extension.undoImagePath",
       "title": "Undo Image Path Change"
+    },
+    {
+      "command": "extension.convertImgSrcToRelative",
+      "title": "Convert Image Src to Relative"
     }
     ],
     "menus": {
@@ -46,6 +50,11 @@
         {
           "command": "extension.editImagePath",
           "when": "editorFocus && editorHasSelection && !editorReadonly && resourceLangId == html"
+        },
+        {
+          "when": "resourceLangId == html",
+          "command": "extension.convertImgSrcToRelative",
+          "group": "navigation"
         }
       ]
     }

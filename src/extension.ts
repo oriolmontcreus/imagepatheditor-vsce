@@ -54,6 +54,65 @@ function deleteFileAsync(filePath: string): Promise<void> {
     });
 }
 
+async function convertImgSrcToRelative() {
+    const activeEditor = vscode.window.activeTextEditor;
+    if (!activeEditor) {
+        vscode.window.showErrorMessage('No active HTML editor detected.');
+        return;
+    }
+
+    const document = activeEditor.document;
+    const text = document.getText();
+    const imgTagRegex = /<img\s+[^>]*src="([^"]+)"[^>]*>/g;
+    let match;
+    let edit = new vscode.WorkspaceEdit();
+
+    while ((match = imgTagRegex.exec(text))) {
+        const imgSrc = match[1];
+        const imgTagIndex = match.index;
+
+        // Skip if the match index is not a number
+        if (typeof imgTagIndex !== 'number') {
+            continue;
+        }
+
+        // Make path relative if it's not already relative to the current document
+        if (path.isAbsolute(imgSrc) || !imgSrc.startsWith('.')) {
+            // Determine the directory of the current document
+            const documentDir = path.dirname(document.uri.fsPath);
+
+            // Create a relative path from the document to the image source
+            let relativeImgPath = path.relative(documentDir, path.join(documentDir, imgSrc)).split(path.sep).join('/');
+
+            // Ensure the relative path starts with './'
+            if (!relativeImgPath.startsWith('.')) {
+                relativeImgPath = './' + relativeImgPath;
+            }
+
+            const newImgTag = match[0].replace(`"${imgSrc}"`, `"${relativeImgPath}"`);
+            const imgTagRange = new vscode.Range(
+                document.positionAt(imgTagIndex),
+                document.positionAt(imgTagIndex + match[0].length)
+            );
+
+            edit.replace(document.uri, imgTagRange, newImgTag);
+        }
+    }
+
+    if (edit.size === 0) {
+        vscode.window.showInformationMessage('All image paths are already relative to the current document.');
+        return;
+    }
+
+    const success = await vscode.workspace.applyEdit(edit);
+    if (success) {
+        vscode.window.showInformationMessage('All image paths have been converted to relative paths.');
+    } else {
+        vscode.window.showErrorMessage('Failed to convert image paths.');
+    }
+}
+
+
 export function activate(context: vscode.ExtensionContext) {
     let editImageDisposable = vscode.commands.registerCommand('extension.editImagePath', async () => {
         const activeEditor = vscode.window.activeTextEditor;
@@ -154,7 +213,9 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    context.subscriptions.push(editImageDisposable, undoDisposable);
+    let convertImgSrcDisposable = vscode.commands.registerCommand('extension.convertImgSrcToRelative', convertImgSrcToRelative);
+
+    context.subscriptions.push(editImageDisposable, undoDisposable, convertImgSrcDisposable);
 }
 
 export function deactivate() {}
