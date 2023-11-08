@@ -4,6 +4,10 @@ All notable changes to the "omont-imagepatheditor" extension will be documented 
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+### 6️⃣ Version 0.0.6 ###
+
+- Fixed the issue of the menu to create the missing directories to not show up
+
 ### 5️⃣ Version 0.0.5 ###
 
 **Automatic Path Adjustment**

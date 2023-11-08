@@ -33,6 +33,10 @@ Follow these steps to integrate **Image Path Editor** into your VS Code:
 
 ## 📣 Release Notes
 
+### 6️⃣ Version 0.0.6 ###
+
+- Fixed the issue of the menu to create the missing directories to not show up
+
 ### 5️⃣ Version 0.0.5 ###
 
 **Automatic Path Adjustment**

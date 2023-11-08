@@ -154,7 +154,17 @@ export function activate(context: vscode.ExtensionContext) {
 
                 const newFileDir = path.dirname(newFilePath);
                 if (!fs.existsSync(newFileDir)) {
-                    fs.mkdirSync(newFileDir, { recursive: true });
+                    const answer = await vscode.window.showInformationMessage(
+                        `The directory ${newFileDir} does not exist. Do you want to create it?`,
+                        'Yes',
+                        'No'
+                    );
+                    if (answer === 'Yes') {
+                        fs.mkdirSync(newFileDir, { recursive: true });
+                    } else {
+                        vscode.window.showWarningMessage('Operation cancelled.');
+                        return;
+                    }
                 }
 
                 undoStack.push({ oldPath: imagePath, newPath: getRelativePathForEditor(activeEditor.document, newFilePath) });
